@@ -1,5 +1,5 @@
 # ADAPTED from https://github.com/yl4579/StyleTTS2/blob/main/Modules/istftnet.py
-from kokoro.custom_stft import CustomSTFT
+from kokoro_batch.custom_stft import CustomSTFT
 from torch.nn.utils.parametrizations import weight_norm
 import math
 import torch
@@ -207,7 +207,7 @@ class SineGen(nn.Module):
         #        std = self.sine_amp/3 -> max value ~ self.sine_amp
         #        for voiced regions is self.noise_std
         noise_amp = uv * self.noise_std + (1 - uv) * self.sine_amp / 3
-        noise = noise_amp * torch.linspace(0.1, 0.9, sine_waves.shape[-1]).expand_as(sine_waves)
+        noise = noise_amp * torch.linspace(0.1, 0.9, sine_waves.shape[-1], device=f0.device).expand_as(sine_waves)
         # first: set the unvoiced part to 0 by uv
         # then: additive noise
         sine_waves = sine_waves * uv + noise
@@ -255,7 +255,7 @@ class SourceModuleHnNSF(nn.Module):
             sine_wavs, uv, _ = self.l_sin_gen(x) # sine = b x max_dur*upsample_scale x harmonics
         sine_merge = self.l_tanh(self.l_linear(sine_wavs)) # b x max_dur*upsample_scale x 1
         # source for noise branch, in the same shape as uv
-        noise = torch.linspace(0.1, 0.9, uv.shape[-1]).expand_as(uv) * self.sine_amp / 3 # b x max_dur*upsample_scale x 1
+        noise = torch.linspace(0.1, 0.9, uv.shape[-1], device=x.device).expand_as(uv) * self.sine_amp / 3 # b x max_dur*upsample_scale x 1
         return sine_merge, noise, uv
 
 
@@ -384,7 +384,7 @@ class AdainResBlk1d(nn.Module):
     def forward(self, x, s, frame_mask): # x: b x d_model x max_dur, s: b x 1 x sty_dim
         upsampled_mask = self.upsample(frame_mask)
         out = self._residual(x, s, upsampled_mask, frame_mask)
-        out = (out + self._shortcut(x, upsampled_mask)) * torch.rsqrt(torch.tensor(2)) * upsampled_mask
+        out = (out + self._shortcut(x, upsampled_mask)) * torch.rsqrt(torch.tensor(2, device=x.device, dtype=x.dtype)) * upsampled_mask
         return out, upsampled_mask
 
 

@@ -1,5 +1,5 @@
 # %%
-from kokoro import KModel, phonemize, set_lexicon
+from kokoro_batch import KModel, phonemize, set_lexicon
 import torch
 import torch.nn.utils.rnn as rnn
 import onnx

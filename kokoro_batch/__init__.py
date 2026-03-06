@@ -17,7 +17,7 @@ logger.add(
 )
 
 # Disable before release or as needed
-logger.disable("kokoro")
+logger.disable("kokoro_batch")
 
 from .model import KModel
 from .tokenizer import phonemize, set_lexicon

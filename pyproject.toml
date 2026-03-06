@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "kokoro"
+name = "kokoro-batch"
 version = "0.9.4"
 description = "TTS"
 readme = "README.md"
@@ -26,5 +26,5 @@ dependencies = [
 ]
 
 [tool.hatch.build.targets.wheel]
-only-include = ["kokoro"]
+only-include = ["kokoro_batch"]
 only-packages = true

@@ -151,7 +151,7 @@ class KModel(torch.nn.Module):
         frame_indices = torch.arange(max_frames, device=self.device).view(1,1,-1) # 1 x 1 x max_dur
         duration_cumsum = duration.cumsum(dim=1).unsqueeze(-1) # b x seq_len x 1
         mask1 = duration_cumsum > frame_indices # b x seq_len x max_dur
-        mask2 = frame_indices >= torch.cat([torch.zeros(duration.shape[0],1, 1), duration_cumsum[:,:-1,:]],dim=1) # b x seq_len x max_dur
+        mask2 = frame_indices >= torch.cat([torch.zeros(duration.shape[0],1, 1, device=self.device), duration_cumsum[:,:-1,:]],dim=1) # b x seq_len x max_dur
         pred_aln_trg = (mask1 & mask2).float().transpose(1, 2) # b x max_dur x seq_len 
         en = torch.bmm(pred_aln_trg, d) # b x max_dur x (d_model + sty_dim)
 
