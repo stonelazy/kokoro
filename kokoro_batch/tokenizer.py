@@ -803,11 +803,13 @@ def tokenize(tokens, features, nonStringFeatureIndexList):
                     phoneme = tok
                     whitespace=False
                 elif LEXICON is not None and tok in LEXICON:
-                    phoneme = LEXICON[tok]
+                    entry = LEXICON[tok]
+                    phoneme = entry['DEFAULT'] if isinstance(entry, dict) else entry
                 else:
                     tok_lower = tok.lower()
                     if LEXICON is not None and tok_lower in LEXICON:
-                        phoneme = LEXICON[tok_lower]
+                        entry = LEXICON[tok_lower]
+                        phoneme = entry['DEFAULT'] if isinstance(entry, dict) else entry
                     else:
                         phoneme = backend.phonemize([tok_lower], strip=True)[0]
                 stress = None
