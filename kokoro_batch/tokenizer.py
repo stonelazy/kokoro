@@ -211,7 +211,7 @@ def merge_tokens(tokens, unk):
             phonemes = phonemes
         else:
             phonemes = phonemes + t.phonemes
-    if isspace(phonemes[0]):
+    if phonemes and isspace(phonemes[0]):
         phonemes = phonemes[1:]
     stress_token = None
     if len(stress) == 1:
@@ -311,7 +311,7 @@ def is_function_word(word):
         'him', 'her', 'them', 'us', 'my', 'your', 'his', 'their', 'our', 'its'
     ]
     word = word.lower()
-    if word[-1] in PUNCTS:
+    if word and word[-1] in PUNCTS:
         word = word[:-1]
     return word in function_words
 
@@ -682,11 +682,13 @@ def preprocess(text):
         is_alias = False
         f = ""
         def is_signed(s):
+            if not s:
+                return False
             if s[0] == '-' or s[0] == '+':
                 return bool(re.match(r'^[0-9]+$', s[1:]))
             return bool(re.match(r'^[0-9]+$', s))
         
-        if replacement[0] == '/' and replacement[-1] == '/':
+        if replacement and replacement[0] == '/' and replacement[-1] == '/':
             # This is a phoneme specification
             f = replacement
         elif original[0] == '$' or ':' in original or '.' in original:
@@ -856,5 +858,6 @@ def set_lexicon(lexicon):
     Returns:
         None: Updates the global LEXICON variable
     """
+    global LEXICON
     LEXICON = lexicon
     print("LEXICON Sample keys", list(LEXICON.keys())[:10])
